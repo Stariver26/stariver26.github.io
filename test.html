@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>合肥纯零科技有限公司</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif}
+  body{
+    background:#f5f7fa;
+    color:#333;
+    line-height:1.6;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+  }
+
+  /* 右上角时钟样式 */
+  #clock {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #0066cc;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 8px 16px;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 999;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+  }
+  #clock.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  #clock:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .container{
+    max-width:800px;
+    margin:0 auto;
+    padding:20px;
+  }
+
+  header{
+    text-align:center;
+    padding:40px 0;
+    animation: slideUp 0.6s ease 0.2s both;
+  }
+
+  /* 公司LOGO图片 */
+  .company-logo {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+  }
+  .company-logo:hover {
+    transform: scale(1.05);
+  }
+
+  .company-name{
+    font-size:32px;
+    font-weight:700;
+    color:#222;
+    margin-bottom:10px;
+    transition: color 0.3s ease;
+  }
+  .company-name:hover {
+    color: #0066cc;
+  }
+
+  .box{
+    background:#fff;
+    padding:25px 30px;
+    margin-bottom:20px;
+    border-radius:8px;
+    box-shadow:0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    animation: slideUp 0.6s ease both;
+  }
+  .box:nth-child(2) { animation-delay: 0.3s; }
+  .box:nth-child(3) { animation-delay: 0.4s; }
+  .box:nth-child(4) { animation-delay: 0.5s; }
+  .box:nth-child(5) { animation-delay: 0.6s; }
+  .box:nth-child(6) { animation-delay: 0.7s; }
+
+  .box:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
+  .box h2{
+    font-size:20px;
+    margin-bottom:15px;
+    color:#111;
+    border-left:4px solid #0066cc;
+    padding-left:10px;
+    transition: border-color 0.3s ease;
+  }
+  .box:hover h2 {
+    border-color: #004c99;
+  }
+
+  .box ul{list-style:none;padding-left:5px}
+  .box li{
+    padding:6px 0;
+    font-size:16px;
+    transition: transform 0.2s ease;
+  }
+  .box li:hover {
+    transform: translateX(5px);
+  }
+  .box p{font-size:16px;line-height:1.8}
+  .box a{
+    color:#0066cc;
+    text-decoration:none;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+  .box a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: #0066cc;
+    transition: width 0.3s ease;
+  }
+  .box a:hover{
+    color: #004c99;
+  }
+  .box a:hover::after {
+    width: 100%;
+  }
+
+  footer{
+    text-align:center;
+    padding:20px;
+    color:#666;
+    font-size:14px;
+    animation: fadeIn 0.8s ease 0.8s both;
+  }
+</style>
+</head>
+<body>
+
+<div id="clock"></div>
+
+<div class="container">
+  <header>
+    <!-- 图片放在公司名上方 -->
+    <img src="IMG_20260208_220923.jpg" class="company-logo" alt="纯零科技">
+    <div class="company-name">合肥纯零科技有限公司</div>
+    <p>不做最好，只做更好</p>
+  </header>
+
+  <div class="box">
+    <h2>关于我们</h2>
+    <p>合肥纯零科技有限公司是一家专注于软件开发与网页开发的科技企业。我们致力于通过前沿技术和创意理念，为用户提供真正解决问题的方案及成品。</p>
+  </div>
+
+  <div class="box">
+    <h2>CTL启动器</h2>
+    <ul>
+      <li>一个真正能解决玩家问题的MC启动器</li>
+      <li>正在开发中...</li>
+      <li><a href="https://github.com/milkCTL/CraftTechLauncher-CTL" target="_blank">Github链接</a></li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h2>Stariver起始页</h2>
+    <ul>
+      <li>一个全新的新时代起始页</li>
+      <li>无广告、无收集、无泄露</li>
+      <li><a href="https://stariver.smartdolphin.top/" target="_blank">点击试用</a></li>
+    </ul>
+  </div>
+
+  <div class="box">
+    <h2>联系我们</h2>
+    <p>牛奶（QQ）：<a href="https://ti.qq.com/open_qq/index2.html?url=mqqapi%3a%2f%2fuserprofile%2ffriend_profile_card%3fsrc_type%3dweb%26version%3d1.0%26source%3d2%26uin%3d3854901954" target="_blank">3854901954</a></p>
+    <p>弘九honjiu（QQ）：<a href="https://ti.qq.com/open_qq/index2.html?url=mqqapi%3a%2f%2fuserprofile%2ffriend_profile_card%3fsrc_type%3dweb%26version%3d1.0%26source%3d2%26uin%3d257154013" target="_blank">257154013</a></p>
+    <p>纯〇科技（QQ群）：<a href="https://qun.qq.com/universal-share/share?ac=1&authKey=rsTBPj4VEAyUUipedfYaerC0RKetyEU7ei9fXOIy9zXRn%2BOEWN%2BuKaltGVW7c4cl&busi_data=eyJncm91cENvZGUiOiI3MjQ1ODY3NDUiLCJ0b2tlbiI6IlR6dW1wcXk1YnNxQnlmQjZZdnVhNjA4UXBjRkJ1OW5RSldpOHRUbGc5ZUQyeWs0V21OTkhHMTdJZkJDUW5XNzYiLCJ1aW4iOiIyNTcxNTQwMTMifQ%3D%3D&data=VwvHZ6i8SW6s9-aAezA1Oy7YVmYt-Qgt1_E9VRb_6bCYIpmPdPrgK9aTysZdDfZYBKqetqCN4yhjm-IPAwbSBw&svctype=4&tempid=h5_group_info" target="_blank">724586745</a></p>
+  </div>
+
+  <div class="box">
+    <h2>友情链接</h2>
+    <p>
+      <a href="https://www.yjgn.teft.cn/">云矩光年科技</a>
+    </p>
+  </div>
+</div>
+
+<footer>
+  © 2026 合肥纯零科技有限公司 版权所有
+</footer>
+
+<script>
+  function updateClock() {
+    const now = new Date();
+    const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+    const hours = String(beijingTime.getUTCHours()).padStart(2, '0');
+    const minutes = String(beijingTime.getUTCMinutes()).padStart(2, '0');
+    const seconds = String(beijingTime.getUTCSeconds()).padStart(2, '0');
+    document.getElementById('clock').textContent = `${hours}:${minutes}:${seconds}`;
+  }
+
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  const clock = document.getElementById('clock');
+  window.addEventListener('scroll', function() {
+    if (window.scrollY === 0) {
+      clock.classList.add('visible');
+    } else {
+      clock.classList.remove('visible');
+    }
+  });
+</script>
+
+</body>
+</html>
