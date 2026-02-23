@@ -3,61 +3,257 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>合肥纯零科技有限公司</title>
+<link rel="icon" href="IMG_20260208_220923.jpg">
+<title>合肥市纯零科技有限公司</title>
 <style>
   *{margin:0;padding:0;box-sizing:border-box;font-family:Microsoft YaHei,sans-serif}
-  body{background:#f5f7fa;color:#333;line-height:1.6}
-  .container{max-width:800px;margin:0 auto;padding:20px}
-  
-  header{text-align:center;padding:40px 0}
-  .company-name{font-size:32px;font-weight:700;color:#222;margin-bottom:10px}
-  
+  html {
+    scroll-behavior: smooth;
+  }
+  body{
+    background:#f5f7fa;
+    color:#333;
+    line-height:1.6;
+    opacity: 0;
+    animation: fadeIn 0.8s ease forwards;
+  }
+
+  .fixed-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 999;
+    opacity: 0;
+    transform: translateY(-10px);
+    animation: slideInTop 0.6s ease 0.2s forwards;
+  }
+
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .fixed-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+  }
+
+  .fixed-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0066cc;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .fixed-title:active {
+    transform: scale(0.96);
+  }
+
+  /* 菜单按钮 */
+  .menu-btn {
+    font-size: 22px;
+    color: #0066cc;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* 下拉菜单 */
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    width: 120px;
+    padding: 8px 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.3s ease;
+  }
+
+  .dropdown-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+
+  .dropdown-item {
+    padding: 10px 15px;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .dropdown-item:hover {
+    background: #f0f5ff;
+    color: #0066cc;
+  }
+
+  @keyframes slideInTop {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .container{
+    max-width:800px;
+    margin:0 auto;
+    padding: 80px 20px 20px;
+  }
+
+  header{
+    text-align:center;
+    padding:20px 0;
+    animation: slideUp 0.6s ease 0.2s both;
+  }
+
+  .company-name{
+    font-size:32px;
+    font-weight:700;
+    color:#222;
+    margin-bottom:10px;
+    transition: color 0.3s ease;
+  }
+  .company-name:hover {
+    color: #0066cc;
+  }
+
   .box{
     background:#fff;
     padding:25px 30px;
     margin-bottom:20px;
     border-radius:8px;
     box-shadow:0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    animation: slideUp 0.6s ease both;
   }
-  
+  .box:nth-child(2) { animation-delay: 0.3s; }
+  .box:nth-child(3) { animation-delay: 0.4s; }
+  .box:nth-child(4) { animation-delay: 0.5s; }
+  .box:nth-child(5) { animation-delay: 0.6s; }
+  .box:nth-child(6) { animation-delay: 0.7s; }
+
+  .box:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+  }
+
   .box h2{
     font-size:20px;
     margin-bottom:15px;
     color:#111;
     border-left:4px solid #0066cc;
     padding-left:10px;
+    transition: border-color 0.3s ease;
+  }
+  .box:hover h2 {
+    border-color: #004c99;
   }
 
   .box ul{list-style:none;padding-left:5px}
-  .box li{padding:6px 0;font-size:16px}
+  .box li{
+    padding:6px 0;
+    font-size:16px;
+    transition: transform 0.2s ease;
+  }
+  .box li:hover {
+    transform: translateX(5px);
+  }
   .box p{font-size:16px;line-height:1.8}
-  .box a{color:#0066cc;text-decoration:none}
-  .box a:hover{text-decoration:underline}
+  .box a{
+    color:#0066cc;
+    text-decoration:none;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+  .box a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background-color: #0066cc;
+    transition: width 0.3s ease;
+  }
+  .box a:hover{
+    color: #004c99;
+  }
+  .box a:hover::after {
+    width: 100%;
+  }
 
   footer{
     text-align:center;
     padding:20px;
     color:#666;
     font-size:14px;
+    animation: fadeIn 0.8s ease 0.8s both;
   }
 </style>
 </head>
 <body>
 
+<div class="fixed-header">
+  <div class="logo-area">
+    <img src="IMG_20260208_220923.jpg" class="fixed-logo" alt="纯零科技">
+    <div class="fixed-title" onclick="goTop()">纯零科技</div>
+  </div>
+
+  <div class="dropdown">
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    <div class="dropdown-menu" id="menu">
+      <div class="dropdown-item" onclick="goBottom()">联系我们</div>
+    </div>
+  </div>
+</div>
+
 <div class="container">
-  <!-- 公司名 -->
   <header>
-    <div class="company-name">合肥纯零科技有限公司</div>
+    <div class="company-name">合肥市纯零科技有限公司</div>
     <p>不做最好，只做更好</p>
   </header>
 
-  <!-- 关于我们 -->
   <div class="box">
     <h2>关于我们</h2>
-    <p>合肥纯零科技有限公司是一家专注于软件开发与网页开发的科技企业。我们致力于通过前沿技术和创意理念，为用户提供真正解决问题的方案及成品。</p>
+    <p>合肥市纯零科技有限公司是一家专注于软件开发与网页开发的科技企业。我们致力于通过前沿技术和创意理念，为用户提供真正解决问题的方案及成品。</p>
   </div>
 
-  <!-- 主营业务一 -->
   <div class="box">
     <h2>CTL启动器</h2>
     <ul>
@@ -67,7 +263,6 @@
     </ul>
   </div>
 
-  <!-- 主营业务二 -->
   <div class="box">
     <h2>Stariver起始页</h2>
     <ul>
@@ -77,15 +272,13 @@
     </ul>
   </div>
 
-  <!-- 联系我们 -->
   <div class="box">
     <h2>联系我们</h2>
     <p>牛奶（QQ）：<a href="https://ti.qq.com/open_qq/index2.html?url=mqqapi%3a%2f%2fuserprofile%2ffriend_profile_card%3fsrc_type%3dweb%26version%3d1.0%26source%3d2%26uin%3d3854901954" target="_blank">3854901954</a></p>
     <p>弘九honjiu（QQ）：<a href="https://ti.qq.com/open_qq/index2.html?url=mqqapi%3a%2f%2fuserprofile%2ffriend_profile_card%3fsrc_type%3dweb%26version%3d1.0%26source%3d2%26uin%3d257154013" target="_blank">257154013</a></p>
-    <p>纯〇科技（QQ群）：<a href="https://qun.qq.com/universal-share/share?ac=1&authKey=5FrQspDSRrTtxXtSxQ7nKv249vpgjxD2hNea11c9OxLwhvdfNc3rzuvZ3L2arvtu&busi_data=eyJncm91cENvZGUiOiIxMDgzMjc0ODMwIiwidG9rZW4iOiJsTjBpd091YTBrTWhxVysvQjNNTHJLVGdjV2pvMzVELy92dEs3Q2VOOWhWY3pKb2pmQm0zVGJlKzJaZlFMb0p5IiwidWluIjoiMjU3MTU0MDEzIn0%3D&data=3Eei-TmEDN4b4ih3pgbbMSZYQpJolD8gU1TyZBcBQo-vpX38w3s38-OkxJeOJvhCrjc34d90YkoP-G6eifS1Xg&svctype=4&tempid=h5_group_info" target="_blank">1083274830</a></p>
+        <p>纯〇科技（QQ群）：<a href="https://qun.qq.com/universal-share/share?ac=1&authKey=5FrQspDSRrTtxXtSxQ7nKv249vpgjxD2hNea11c9OxLwhvdfNc3rzuvZ3L2arvtu&busi_data=eyJncm91cENvZGUiOiIxMDgzMjc0ODMwIiwidG9rZW4iOiJsTjBpd091YTBrTWhxVysvQjNNTHJLVGdjV2pvMzVELy92dEs3Q2VOOWhWY3pKb2pmQm0zVGJlKzJaZlFMb0p5IiwidWluIjoiMjU3MTU0MDEzIn0%3D&data=3Eei-TmEDN4b4ih3pgbbMSZYQpJolD8gU1TyZBcBQo-vpX38w3s38-OkxJeOJvhCrjc34d90YkoP-G6eifS1Xg&svctype=4&tempid=h5_group_info" target="_blank">1083274830</a></p>
   </div>
 
-  <!-- 友情链接 -->
   <div class="box">
     <h2>友情链接</h2>
     <p>
@@ -94,10 +287,25 @@
   </div>
 </div>
 
-<!-- 版权信息 -->
 <footer>
-  © 2026 合肥纯零科技有限公司 版权所有
+  © 2026 合肥市纯零科技有限公司 版权所有
 </footer>
 
-</body>
-</html>
+<script>
+  function goTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function goBottom() {
+    window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    document.getElementById('menu').classList.remove('show');
+  }
+
+  function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.classList.toggle('show');
+  }
+
+  // 点击外面关闭菜单
+  window.onclick = function(e) {
+    if (!e.target.closest('.d
