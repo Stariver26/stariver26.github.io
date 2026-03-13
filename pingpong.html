@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>像素乒乓-GameBox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        body {
+            background: #1a1a1a;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        /* 首页样式 */
+        .home-screen {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .home-screen h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .home-screen h1:hover {
+            color: #4ade80;
+        }
+        .home-screen p {
+            font-size: 20px;
+            color: #aaa;
+            margin-bottom: 30px;
+        }
+        .btn {
+            padding: 18px 40px;
+            font-size: 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .btn-ai {
+            background: #2e7d32;
+            color: #fff;
+        }
+        .btn-ai:hover {
+            background: #388e3c;
+        }
+        .btn-settings {
+            background: #2d3436;
+            color: #81ecec;
+        }
+        .btn-settings:hover {
+            background: #374149;
+        }
+        /* 游戏界面样式 */
+        .game-screen {
+            display: none;
+            flex-direction: column;
+            width: 100%;
+            max-width: 600px;
+        }
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+        }
+        .back-btn {
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .game-title {
+            color: #4ade80;
+            font-size: 20px;
+        }
+        #gameCanvas {
+            background: #1a1a1a;
+            border: 2px solid #2d3436;
+            width: 100%;
+            height: auto;
+        }
+        .score {
+            display: flex;
+            justify-content: center;
+            gap: 80px;
+            font-size: 36px;
+            margin: 20px 0;
+        }
+        .score-left {
+            color: #4ade80;
+        }
+        .score-right {
+            color: #ef4444;
+        }
+        /* 倒计时样式 */
+        .countdown {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 72px;
+            color: #fff;
+            display: none;
+            z-index: 10;
+        }
+        /* 胜负提示样式 */
+        .result-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+        }
+        .result-box {
+            background: #2d3436;
+            padding: 40px 60px;
+            border-radius: 16px;
+            text-align: center;
+        }
+        .result-text {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .win {
+            color: #4ade80;
+        }
+        .lose {
+            color: #ef4444;
+        }
+        /* 设置弹窗样式（含开发者选项） */
+        .settings-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .settings-box {
+            background: #2d3436;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .settings-box h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+        }
+        .setting-item {
+            margin: 20px 0;
+        }
+        .setting-item label {
+            font-size: 20px;
+            margin-right: 15px;
+        }
+        #difficultySelect {
+            padding: 8px 15px;
+            font-size: 18px;
+            border-radius: 8px;
+            background: #444;
+            color: #fff;
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+        .dev-item {
+            margin: 25px 0;
+            padding-top: 20px;
+            border-top: 1px solid #444;
+        }
+        .dev-btn {
+            padding: 10px 20px;
+            background: #e67e22;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .dev-btn:hover {
+            background: #d35400;
+        }
+        #closeSettings {
+            margin-top: 25px;
+            padding: 12px;
+            background: #4ade80;
+            color: #000;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+        #closeSettings:hover {
+            transform: scale(1.05);
+            background: #36d372;
+        }
+        /* 开发者得分调整弹窗（控制球出界得分） */
+        .dev-score-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 110;
+        }
+        .dev-score-box {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 320px;
+        }
+        .dev-score-box h3 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #e67e22;
+        }
+        .score-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .score-input label {
+            font-size: 18px;
+            color: #fff;
+        }
+        .score-input input {
+            width: 80px;
+            padding: 8px;
+            background: #333;
+            color: #fff;
+            border: 1px solid #444;
+            border-radius: 6px;
+            outline: none;
+            font-size: 16px;
+            text-align: center;
+        }
+        .dev-score-btn {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .dev-score-btn button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-save {
+            background: #2ecc71;
+            color: #fff;
+        }
+        .btn-save:hover {
+            background: #27ae60;
+        }
+        .btn-cancel {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .btn-cancel:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <!-- 首页 -->
+    <div class="home-screen" id="homeScreen">
+        <h1 id="gameTitle">像素乒乓</h1>
+        <p>经典乒乓对战，先得7分获胜！</p>
+        <button class="btn btn-ai" id="startAI">🤖 人机对战</button>
+        <button class="btn btn-settings" id="openSettings">⚙️ 设置</button>
+    </div>
+    <!-- 游戏界面 -->
+    <div class="game-screen" id="gameScreen">
+        <div class="game-header">
+            <div class="back-btn" id="backBtn">← 返回</div>
+            <div class="game-title">像素乒乓</div>
+        </div>
+        <div class="score">
+            <span class="score-left" id="scoreLeft">0</span>
+            <span class="score-right" id="scoreRight">0</span>
+        </div>
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+        <div class="countdown" id="countdown">3</div>
+    </div>
+    <!-- 胜负提示弹窗 -->
+    <div class="result-modal" id="resultModal">
+        <div class="result-box">
+            <div class="result-text win" id="resultText">你赢了！</div>
+        </div>
+    </div>
+    <!-- 设置弹窗（默认隐藏开发者选项） -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-box">
+            <h2>⚙️ 设置</h2>
+            <div class="setting-item">
+                <label>难度：</label>
+                <select id="difficultySelect">
+                    <option value="easy" selected>简单</option>
+                    <option value="normal">普通</option>
+                    <option value="hard">困难</option>
+                    <option value="hell">地狱</option>
+                </select>
+            </div>
+            <!-- 开发者选项（初始隐藏） -->
+            <div class="dev-item" id="devItem" style="display: none;">
+                <button class="dev-btn" id="openDevModal">开发者选项</button>
+            </div>
+            <div id="closeSettings">确定</div>
+        </div>
+    </div>
+    <!-- 开发者得分调整弹窗（控制球出界得分） -->
+    <div class="dev-score-modal" id="devScoreModal">
+        <div class="dev-score-box">
+            <h3>开发者选项</h3>
+            <div class="score-input">
+                <label>玩家进球得分：</label>
+                <input type="number" id="playerScoreInput" min="1" max="7" value="1">
+            </div>
+            <div class="score-input">
+                <label>AI进球得分：</label>
+                <input type="number" id="aiScoreInput" min="1" max="7" value="1">
+            </div>
+            <div class="dev-score-btn">
+                <button class="btn-save" id="saveScore">保存</button>
+                <button class="btn-cancel" id="cancelScore">取消</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 元素获取
+        const homeScreen = document.getElementById('homeScreen');
+        const gameScreen = document.getElementById('gameScreen');
+        const backBtn = document.getElementById('backBtn');
+        const startAI = document.getElementById('startAI');
+        const scoreLeftEl = document.getElementById('scoreLeft');
+        const scoreRightEl = document.getElementById('scoreRight');
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const countdownEl = document.getElementById('countdown');
+        const resultModal = document.getElementById('resultModal');
+        const resultText = document.getElementById('resultText');
+        const settingsModal = document.getElementById('settingsModal');
+        const openSettings = document.getElementById('openSettings');
+        const closeSettings = document.getElementById('closeSettings');
+        const difficultySelect = document.getElementById('difficultySelect');
+        // 彩蛋+开发者模式元素
+        const gameTitle = document.getElementById('gameTitle');
+        const devItem = document.getElementById('devItem');
+        const openDevModal = document.getElementById('openDevModal');
+        const devScoreModal = document.getElementById('devScoreModal');
+        const playerScoreInput = document.getElementById('playerScoreInput');
+        const aiScoreInput = document.getElementById('aiScoreInput');
+        const saveScore = document.getElementById('saveScore');
+        const cancelScore = document.getElementById('cancelScore');
+
+        // 游戏核心变量【初始得分从0开始】
+        let scoreLeft = 0, scoreRight = 0;
+        const winningScore = 7;
+        let gameRunning = false;
+        let ballMoving = false;
+        let aiSpeed = 4; // AI速度
+        let ballSpeedRate = 1; // 球速倍率（地狱模式=1.5）
+        const baseVx = 4, baseVy = 4; // 基础球速
+        // 球出界得分值（默认1分，开发者修改后永久保存至刷新）
+        let playerGoalScore = 1;  // 玩家得分：AI没接住（球出右边界）
+        let aiGoalScore = 1;      // AI得分：玩家没接住（球出左边界）
+        // 彩蛋变量：点击标题计数
+        let titleClickCount = 0;
+        // 开发者模式状态
+        let isDevMode = false;
+
+        // 球拍与球参数【精准碰撞体积】
+        const paddleWidth = 12, paddleHeight = 80;
+        const ballSize = 10;
+        let leftPaddle = { x: 20, y: canvas.height/2 - paddleHeight/2, w: paddleWidth, h: paddleHeight };
+        let rightPaddle = { x: canvas.width - 32, y: canvas.height/2 - paddleHeight/2, w: paddleWidth, h: paddleHeight };
+        let ball = { x: canvas.width/2, y: canvas.height/2, r: ballSize/2, vx: baseVx * ballSpeedRate, vy: baseVy * ballSpeedRate };
+
+        // 根据难度设置AI速度+球速倍率
+        function setDifficulty(level) {
+            switch(level) {
+                case 'easy': 
+                    aiSpeed = 4; 
+                    ballSpeedRate = 1; 
+                    break;
+                case 'normal': 
+                    aiSpeed = 6; 
+                    ballSpeedRate = 1; 
+                    break;
+                case 'hard': 
+                    aiSpeed = 9; 
+                    ballSpeedRate = 1; 
+                    break;
+                case 'hell': 
+                    aiSpeed = 9; 
+                    ballSpeedRate = 1.5; 
+                    break;
+            }
+            ball.vx = baseVx * ballSpeedRate;
+            ball.vy = baseVy * ballSpeedRate;
+        }
+
+        // 精准碰撞检测函数
+        function checkCollision(rect1, rect2) {
+            return rect1.x + rect1.w > rect2.x &&
+                   rect1.x < rect2.x + rect2.w &&
+                   rect1.y + rect1.h > rect2.y &&
+                   rect1.y < rect2.y + rect2.h;
+        }
+
+        // 绘制画布
+        function draw() {
+            ctx.fillStyle = '#1a1a1a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            // 绘制中线
+            ctx.strokeStyle = '#333';
+            ctx.setLineDash([10, 10]);
+            ctx.beginPath();
+            ctx.moveTo(canvas.width/2, 0);
+            ctx.lineTo(canvas.width/2, canvas.height);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            // 绘制球拍和球
+            ctx.fillStyle = '#4ade80';
+            ctx.fillRect(leftPaddle.x, leftPaddle.y, leftPaddle.w, leftPaddle.h);
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(rightPaddle.x, rightPaddle.y, rightPaddle.w, rightPaddle.h);
+            ctx.fillStyle = '#fff';
+            ctx.fillRect(ball.x - ball.r, ball.y - ball.r, ball.r*2, ball.r*2);
+        }
+
+        // 更新游戏状态【核心：球出界得分，得分值可配置】
+        function update() {
+            if (!gameRunning) return;
+            if (ballMoving) {
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+                // 球上下边界反弹修正
+                if (ball.y - ball.r <= 0) {
+                    ball.y = ball.r;
+                    ball.vy = -ball.vy;
+                } else if (ball.y + ball.r >= canvas.height) {
+                    ball.y = canvas.height - ball.r;
+                    ball.vy = -ball.vy;
+                }
+                // 球碰撞矩形
+                const ballRect = {
+                    x: ball.x - ball.r,
+                    y: ball.y - ball.r,
+                    w: ball.r * 2,
+                    h: ball.r * 2
+                };
+                // 左球拍碰撞修正
+                if (ball.vx < 0 && checkCollision(ballRect, leftPaddle)) {
+                    ball.x = leftPaddle.x + leftPaddle.w + ball.r;
+                    ball.vx = Math.abs(baseVx * ballSpeedRate);
+                    ball.vy = (ball.y - (leftPaddle.y + leftPaddle.h/2)) * 0.12 * ballSpeedRate;
+                }
+                // 右球拍碰撞修正
+                if (ball.vx > 0 && checkCollision(ballRect, rightPaddle)) {
+                    ball.x = rightPaddle.x - ball.r;
+                    ball.vx = -Math.abs(baseVx * ballSpeedRate);
+                    ball.vy = (ball.y - (rightPaddle.y + rightPaddle.h/2)) * 0.12 * ballSpeedRate;
+                }
+            }
+            // AI追踪逻辑（简单难度随机偏移）
+            if (ball.vx > 0) {
+                const targetY = ball.y - rightPaddle.h/2;
+                const offset = difficultySelect.value === 'easy' ? Math.random() * 40 - 20 : 0;
+                if (rightPaddle.y + 10 < targetY + offset) {
+                    rightPaddle.y += aiSpeed;
+                } else if (rightPaddle.y - 10 > targetY + offset) {
+                    rightPaddle.y -= aiSpeed;
+                }
+            }
+            // 球拍边界限制
+            leftPaddle.y = Math.max(0, Math.min(canvas.height - leftPaddle.h, leftPaddle.y));
+            rightPaddle.y = Math.max(0, Math.min(canvas.height - rightPaddle.h, rightPaddle.y));
+
+            // 计分逻辑【球出界得分，得分值为开发者配置】
+            if (ball.x + ball.r < 0) { // 球出左边界=玩家没接住=AI得分
+                scoreRight += aiGoalScore;
+                scoreRightEl.textContent = scoreRight;
+                checkWin(); // 先检查胜负，再重置球
+                if (gameRunning) resetBall(); // 未分胜负才重置球
+            }
+            if (ball.x - ball.r > canvas.width) { // 球出右边界=AI没接住=玩家得分
+                scoreLeft += playerGoalScore;
+                scoreLeftEl.textContent = scoreLeft;
+                checkWin(); // 先检查胜负，再重置球
+                if (gameRunning) resetBall(); // 未分胜负才重置球
+            }
+        }
+
+        // 重置球位置
+        function resetBall() {
+            ball.x = canvas.width/2;
+            ball.y = canvas.height/2;
+            const randomDir = Math.random() > 0.5 ? 1 : -1;
+            ball.vx = randomDir * baseVx * ballSpeedRate;
+            ball.vy = (Math.random() - 0.5) * 6 * ballSpeedRate;
+            ballMoving = false;
+            startCountdown();
+        }
+
+        // 胜利判断【核心：到达/超过7分显示胜负提示】
+        function checkWin() {
+            if (scoreLeft >= winningScore) {
+                gameRunning = false;
+                ballMoving = false;
+                // 显示"你赢了"提示
+                resultText.textContent = '你赢了！';
+                resultText.className = 'result-text win';
+                resultModal.style.display = 'flex';
+                // 1.5秒后自动返回主界面
+                setTimeout(() => {
+                    resultModal.style.display = 'none';
+                    gameScreen.style.display = 'none';
+                    homeScreen.style.display = 'flex';
+                    resetGame();
+                }, 1500);
+            } else if (scoreRight >= winningScore) {
+                gameRunning = false;
+                ballMoving = false;
+                // 显示"你输了"提示
+                resultText.textContent = '你输了！';
+                resultText.className = 'result-text lose';
+                resultModal.style.display = 'flex';
+                // 1.5秒后自动返回主界面
+                setTimeout(() => {
+                    resultModal.style.display = 'none';
+                    gameScreen.style.display = 'none';
+                    homeScreen.style.display = 'flex';
+                    resetGame();
+                }, 1500);
+            }
+        }
+
+        // 重置游戏【仅重置比分，不重置开发者配置的得分值】
+        function resetGame() {
+            scoreLeft = 0;
+            scoreRight = 0;
+            scoreLeftEl.textContent = '0';
+            scoreRightEl.textContent = '0';
+            leftPaddle.y = canvas.height/2 - leftPaddle.h/2;
+            rightPaddle.y = canvas.height/2 - rightPaddle.h/2;
+            // 【关键修改】不重置playerGoalScore和aiGoalScore，保留开发者配置
+            // 同步输入框显示为当前配置值（避免新局后输入框显示异常）
+            playerScoreInput.value = playerGoalScore;
+            aiScoreInput.value = aiGoalScore;
+        }
+
+        // 1.5秒快速倒计时
+        function startCountdown() {
+            let count = 3;
+            countdownEl.style.display = 'block';
+            countdownEl.textContent = count;
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownEl.textContent = count;
+                } else {
+                    countdownEl.textContent = 'GO!';
+                    setTimeout(() => {
+                        countdownEl.style.display = 'none';
+                        ballMoving = true;
+                    }, 500);
+                    clearInterval(timer);
+                }
+            }, 500);
+        }
+
+        // 游戏主循环
+        function gameLoop() {
+            draw();
+            update();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ********** 彩蛋：点击标题5下显示开发者选项 **********
+        gameTitle.addEventListener('click', () => {
+            titleClickCount++;
+            if (titleClickCount >= 5) {
+                devItem.style.display = 'block';
+                titleClickCount = 0; // 重置计数，防止重复触发
+                alert('已处于开发者模式！');
+            }
+        });
+
+        // ********** 开发者模式：控制球出界得分值（1-7分限制，永久保存至刷新） **********
+        // 打开开发者选项（密码验证）
+        openDevModal.addEventListener('click', () => {
+            const pwd = prompt('请输入密码：');
+            if (pwd === 'honjiu') {
+                isDevMode = true;
+                settingsModal.style.display = 'none';
+                // 同步当前配置的出界得分到输入框（始终显示最新配置）
+                playerScoreInput.value = playerGoalScore;
+                aiScoreInput.value = aiGoalScore;
+                devScoreModal.style.display = 'flex';
+            } else {
+                alert('❌ 密码错误！');
+            }
+        });
+
+        // 保存出界得分配置（限制1-7分，永久保存至刷新）
+        saveScore.addEventListener('click', () => {
+            let newPlayerGoalScore = parseInt(playerScoreInput.value) || 1;
+            let newAIGoalScore = parseInt(aiScoreInput.value) || 1;
+            // 强制限制在1-7分范围内
+            newPlayerGoalScore = Math.max(1, Math.min(7, newPlayerGoalScore));
+            newAIGoalScore = Math.max(1, Math.min(7, newAIGoalScore));
+            // 更新配置（永久保存，直到页面刷新）
+            playerGoalScore = newPlayerGoalScore;
+            aiGoalScore = newAIGoalScore;
+            // 同步输入框显示（防止输入超出范围）
+            playerScoreInput.value = playerGoalScore;
+            aiScoreInput.value = aiGoalScore;
+            devScoreModal.style.display = 'none';
+            alert(`✅ 配置生效！玩家进球得${playerGoalScore}分，AI进球得${aiGoalScore}分（刷新页面后重置）`);
+        });
+
+        // 取消得分调整
+        cancelScore.addEventListener('click', () => {
+            devScoreModal.style.display = 'none';
+        });
+
+        // 球拍控制
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const scaleY = canvas.height / rect.height;
+            leftPaddle.y = (e.clientY - rect.top) * scaleY - leftPaddle.h/2;
+        });
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            const scaleY = canvas.height / rect.height;
+            leftPaddle.y = (touch.clientY - rect.top) * scaleY - leftPaddle.h/2;
+        });
+
+        // 基础按钮事件
+        startAI.addEventListener('click', () => {
+            homeScreen.style.display = 'none';
+            gameScreen.style.display = 'flex';
+            gameRunning = true;
+            resetBall(); // 开始新局，重置球位置
+        });
+        backBtn.addEventListener('click', () => {
+            gameScreen.style.display = 'none';
+            homeScreen.style.display = 'flex';
+            gameRunning = false;
+            ballMoving = false;
+            resultModal.style.display = 'none'; // 关闭胜负提示
+            resetGame(); // 手动返回仅重置比分，保留开发者得分配置
+        });
+        openSettings.addEventListener('click', () => {
+            settingsModal.style.display = 'flex';
+        });
+        closeSettings.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+            setDifficulty(difficultySelect.value);
+        });
+
+        // 初始化
+        setDifficulty(difficultySelect.value);
+        gameLoop();
+    </script>
+</body>
+</html>
