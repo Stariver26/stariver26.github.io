@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>像素赛车-GameBox</title>
+    <meta name="description" content="像素风伪3D赛车小游戏，无需下载即可在线畅玩。复古像素画面，方向键操控，挑战最快圈速！">
+    <meta name="keywords" content="像素赛车,H5赛车游戏,网页赛车,伪3D赛车,在线小游戏">
+    <meta property="og:title" content="像素赛车">
+    <meta property="og:description" content="像素风伪3D赛车小游戏，复古画面，方向键操控，挑战最快圈速！">
+    <meta property="og:type" content="website">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoGame",
+        "name": "像素赛车",
+        "description": "像素风伪3D赛车小游戏",
+        "genre": "Racing",
+        "gamePlatform": "Web Browser",
+        "operatingSystem": "Any",
+        "applicationCategory": "Game"
+    }
+    </script>
+    <style>
+        *,
+        *::before,
+        *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: #111411;
+            color: #E1E3DD;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+        }
+
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            height: 48px;
+            background: rgba(17, 20, 17, 0.85);
+            border-bottom: 1px solid #414941;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            padding: 0 16px;
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+        }
+
+        .top-bar a {
+            display: -webkit-inline-box;
+            display: -webkit-inline-flex;
+            display: inline-flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            color: #C1C9BF;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 99px;
+            -webkit-transition: color 0.2s, background 0.2s;
+            transition: color 0.2s, background 0.2s;
+        }
+
+        .top-bar a:hover {
+            color: #E1E3DD;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .top-bar a svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            margin-right: 6px;
+        }
+
+        .top-bar .title {
+            margin-left: auto;
+            color: #84D99A;
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        #gameWrap {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            background: #0a0c0a;
+        }
+
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+
+        #hud {
+            position: fixed;
+            top: 56px;
+            left: 50%;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            display: none;
+            z-index: 50;
+            pointer-events: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #E1E3DD;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+            white-space: nowrap;
+        }
+
+        .hud-item {
+            display: inline-block;
+            margin: 0 12px;
+        }
+
+        .hud-val {
+            color: #A0F5B4;
+        }
+
+        .hud-lap {
+            color: #BEE9F7;
+        }
+
+        #startScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 200;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at 50% 40%, rgba(0, 82, 43, 0.35) 0%, #0a0c0a 70%);
+            text-align: center;
+            padding: 24px;
+        }
+
+        .start-chip {
+            display: -webkit-inline-box;
+            display: -webkit-inline-flex;
+            display: inline-flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            padding: 5px 14px;
+            border-radius: 99px;
+            background: rgba(0, 82, 43, 0.5);
+            color: #A0F5B4;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .start-chip svg {
+            width: 12px;
+            height: 12px;
+            fill: currentColor;
+            margin-right: 5px;
+        }
+
+        #startScreen h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #E1E3DD;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+
+        #startScreen .sub {
+            font-size: 0.9rem;
+            color: #C1C9BF;
+            margin-bottom: 32px;
+        }
+
+        .start-btn {
+            display: inline-block;
+            padding: 14px 40px;
+            border-radius: 99px;
+            background: #84D99A;
+            color: #00391C;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            -webkit-transition: all 0.2s;
+            transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .start-btn:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 2px 12px rgba(132, 217, 154, 0.3);
+        }
+
+        .start-btn:active {
+            -webkit-transform: scale(0.96);
+            transform: scale(0.96);
+        }
+
+        .start-keys {
+            margin-top: 28px;
+            font-size: 0.8rem;
+            color: #8B938A;
+            line-height: 1.8;
+        }
+
+        .start-keys kbd {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: #282B27;
+            color: #C1C9BF;
+            font-family: inherit;
+            border: 1px solid #414941;
+            font-size: 0.75rem;
+            margin: 0 2px;
+        }
+
+        #touchControls {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 90;
+            padding: 12px 16px 24px;
+            pointer-events: none;
+        }
+
+        .touch-row {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            -webkit-box-align: end;
+            -webkit-align-items: flex-end;
+            align-items: flex-end;
+        }
+
+        .touch-lr {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            gap: 8px;
+        }
+
+        .touch-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            pointer-events: auto;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .touch-btn svg {
+            width: 28px;
+            height: 28px;
+            fill: rgba(255, 255, 255, 0.5);
+        }
+
+        .touch-btn.active {
+            background: rgba(132, 217, 154, 0.2);
+            border-color: rgba(132, 217, 154, 0.3);
+        }
+
+        .touch-btn.active svg {
+            fill: #84D99A;
+        }
+
+        .touch-gas {
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+        }
+
+        .touch-brake {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                height: 40px;
+                padding: 0 10px;
+            }
+
+            .top-bar a {
+                font-size: 0.78rem;
+                padding: 4px 8px;
+            }
+
+            .top-bar .title {
+                font-size: 0.78rem;
+            }
+
+            #hud {
+                top: 46px;
+                font-size: 12px;
+            }
+
+            #startScreen h1 {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top-bar">
+        <a href="https://ri3bz6x.cn/gamebox.html">
+            <svg viewBox="0 0 24 24">
+                <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+            </svg>
+            返回
+        </a>
+        <span class="title">像素赛车</span>
+    </div>
+
+    <div id="startScreen">
+        <div class="start-chip">
+            <svg viewBox="0 0 24 24">
+                <path
+                    d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 2c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm4-3c-.83 0-1.5-.67-1.5-1.5S18.67 9 19.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+            </svg>
+            H5 小游戏
+        </div>
+        <h1>像素赛车</h1>
+        <p class="sub">伪3D复古像素风赛车 · 挑战最快圈速</p>
+        <button class="start-btn" id="btnStart">开始游戏</button>
+        <div class="start-keys">
+            <kbd>↑</kbd> / <kbd>W</kbd> 加速 &nbsp;
+            <kbd>↓</kbd> / <kbd>S</kbd> 刹车 &nbsp;
+            <kbd>←</kbd> / <kbd>A</kbd> 左转 &nbsp;
+            <kbd>→</kbd> / <kbd>D</kbd> 右转
+        </div>
+    </div>
+
+    <div id="gameWrap">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div id="hud">
+        <span class="hud-item"><span class="hud-val" id="hudSpeed">0</span> km/h</span>
+        <span class="hud-item">圈时 <span class="hud-val" id="hudLap">0.0</span></span>
+        <span class="hud-item">上圈 <span class="hud-lap" id="hudLast">--</span></span>
+        <span class="hud-item">最快 <span class="hud-lap" id="hudBest">--</span></span>
+    </div>
+
+    <div id="touchControls">
+        <div class="touch-row">
+            <div class="touch-lr">
+                <div class="touch-btn" id="tLeft">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+                    </svg>
+                </div>
+                <div class="touch-btn" id="tRight">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                    </svg>
+                </div>
+            </div>
+            <div class="touch-lr">
+                <div class="touch-btn touch-brake" id="tBrake">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 13H5v-2h14v2z" />
+                    </svg>
+                </div>
+                <div class="touch-btn touch-gas" id="tGas">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+
+            var fps = 60, step = 1 / fps;
+            var width = 640, height = 480;
+            var centrifugal = 0.3;
+            var skySpeed = 0.001, hillSpeed = 0.002, treeSpeed = 0.003;
+            var skyOffset = 0, hillOffset = 0, treeOffset = 0;
+            var segments = [], cars = [];
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var resolution = null;
+            var roadWidth = 2000, segmentLength = 200, rumbleLength = 3;
+            var trackLength = null, lanes = 3;
+            var fieldOfView = 100, cameraHeight = 1000, cameraDepth = null;
+            var drawDistance = 150;
+            var playerX = 0, playerZ = null;
+            var fogDensity = 5, position = 0, speed = 0;
+            var maxSpeed = segmentLength / step;
+            var accel = maxSpeed / 5;
+            var breaking = -maxSpeed;
+            var decel = -maxSpeed / 5;
+            var offRoadDecel = -maxSpeed / 2;
+            var offRoadLimit = maxSpeed / 4;
+            var totalCars = 20;
+            var currentLapTime = 0, lastLapTime = null, bestLapTime = null;
+            var keyLeft = false, keyRight = false, keyFaster = false, keySlower = false;
+            var gameStarted = false;
+
+            var COLORS = {
+                SKY: '#1a3a2a',
+                FOG: '#0a1a10',
+                LIGHT: { road: '#555555', grass: '#1a6b1a', rumble: '#cccccc', lane: '#999999' },
+                DARK: { road: '#4a4a4a', grass: '#116611', rumble: '#666666' },
+                START: { road: '#ffffff', grass: '#ffffff', rumble: '#ffffff' },
+                FINISH: { road: '#111111', grass: '#111111', rumble: '#111111' }
+            };
+
+            var KEY = { LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, A: 65, D: 68, S: 83, W: 87 };
+
+            function timestamp() { return new Date().getTime(); }
+            function toInt(o, d) { if (o !== null) { var x = parseInt(o, 10); if (!isNaN(x)) return x; } return toInt(d, 0); }
+            function limit(v, mn, mx) { return Math.max(mn, Math.min(v, mx)); }
+            function randomInt(a, b) { return Math.round(interpolate(a, b, Math.random())); }
+            function randomChoice(o) { return o[randomInt(0, o.length - 1)]; }
+            function percentRemaining(n, t) { return (n % t) / t; }
+            function accelerate(v, a, dt) { return v + (a * dt); }
+            function interpolate(a, b, p) { return a + (b - a) * p; }
+            function easeIn(a, b, p) { return a + (b - a) * Math.pow(p, 2); }
+            function easeInOut(a, b, p) { return a + (b - a) * ((-Math.cos(p * Math.PI) / 2) + 0.5); }
+            function expFog(d, den) { return 1 / (Math.pow(Math.E, (d * d * den))); }
+            function increase(s, i, mx) { var r = s + i; while (r >= mx) r -= mx; while (r < 0) r += mx; return r; }
+            function project(p, cx, cy, cz, cd, w, h, rw) {
+                p.camera.x = (p.world.x || 0) - cx;
+                p.camera.y = (p.world.y || 0) - cy;
+                p.camera.z = (p.world.z || 0) - cz;
+                p.screen.scale = cd / p.camera.z;
+                p.screen.x = Math.round((w / 2) + (p.screen.scale * p.camera.x * w / 2));
+                p.screen.y = Math.round((h / 2) - (p.screen.scale * p.camera.y * h / 2));
+                p.screen.w = Math.round((p.screen.scale * rw * w / 2));
+            }
+            function overlap(x1, w1, x2, w2, pct) {
+                var h = (pct || 1) / 2;
+                return !((x1 + w1 * h < x2 - w2 * h) || (x1 - w1 * h > x2 + w2 * h));
+            }
+
+            function polygon(c, x1, y1, x2, y2, x3, y3, x4, y4, col) {
+                c.fillStyle = col; c.beginPath();
+                c.moveTo(x1, y1); c.lineTo(x2, y2); c.lineTo(x3, y3); c.lineTo(x4, y4);
+                c.closePath(); c.fill();
+            }
+
+            function rumbleW(pw, l) { return pw / Math.max(6, 2 * l); }
+            function laneW(pw, l) { return pw / Math.max(32, 8 * l); }
+
+            function renderSegment(c, w, ln, x1, y1, w1, x2, y2, w2, fog, col) {
+                var r1 = rumbleW(w1, ln), r2 = rumbleW(w2, ln),
+                    l1 = laneW(w1, ln), l2 = laneW(w2, ln);
+                c.fillStyle = col.grass; c.fillRect(0, y2, w, y1 - y2);
+                polygon(c, x1 - w1 - r1, y1, x1 - w1, y1, x2 - w2, y2, x2 - w2 - r2, y2, col.rumble);
+                polygon(c, x1 + w1 + r1, y1, x1 + w1, y1, x2 + w2, y2, x2 + w2 + r2, y2, col.rumble);
+                polygon(c, x1 - w1, y1, x1 + w1, y1, x2 + w2, y2, x2 - w2, y2, col.road);
+                if (col.lane) {
+                    var lw1 = w1 * 2 / ln, lw2 = w2 * 2 / ln, lx1 = x1 - w1 + lw1, lx2 = x2 - w2 + lw2;
+                    for (var i = 1; i < ln; lx1 += lw1, lx2 += lw2, i++)
+                        polygon(c, lx1 - l1 / 2, y1, lx1 + l1 / 2, y1, lx2 + l2 / 2, y2, lx2 - l2 / 2, y2, col.lane);
+                }
+                if (fog < 1) { c.globalAlpha = 1 - fog; c.fillStyle = COLORS.FOG; c.fillRect(0, y2, w, y1 - y2); c.globalAlpha = 1; }
+            }
+
+            function renderBackground(c, w, h) {
+                var grd = c.createLinearGradient(0, 0, 0, h / 2);
+                grd.addColorStop(0, '#0a1a10');
+                grd.addColorStop(0.5, '#1a3a2a');
+                grd.addColorStop(1, '#0d2618');
+                c.fillStyle = grd;
+                c.fillRect(0, 0, w, h / 2);
+
+                var hY = h * 0.35;
+                c.fillStyle = '#0d1f14';
+                c.beginPath();
+                c.moveTo(0, hY);
+                var hillW = w / 4;
+                for (var i = 0; i < 5; i++) {
+                    var cx = hillW * i + hillOffset * w * 0.5;
+                    cx = cx % (w + hillW) - hillW / 2;
+                    c.quadraticCurveTo(cx, hY - 30 - (i % 3) * 15, cx + hillW / 2, hY);
+                }
+                c.lineTo(w, hY);
+                c.lineTo(w, h / 2);
+                c.lineTo(0, h / 2);
+                c.closePath();
+                c.fill();
+
+                var starSeed = 42;
+                for (var s = 0; s < 40; s++) {
+                    starSeed = (starSeed * 1103515245 + 12345) & 0x7fffffff;
+                    var sx = (starSeed % w);
+                    starSeed = (starSeed * 1103515245 + 12345) & 0x7fffffff;
+                    var sy = (starSeed % (h * 0.3));
+                    var sa = 0.2 + (starSeed % 100) / 200;
+                    c.globalAlpha = sa;
+                    c.fillStyle = '#A0F5B4';
+                    c.fillRect(sx, sy, 2, 2);
+                }
+                c.globalAlpha = 1;
+            }
+
+            function drawPixelCar(c, x, y, w, h, color, isPlayer) {
+                var darker = isPlayer ? '#00783C' : shadeColor(color, -40);
+                var lighter = isPlayer ? '#A0F5B4' : shadeColor(color, 30);
+                c.fillStyle = color;
+                c.fillRect(x - w * 0.5, y - h * 0.65, w, h * 0.65);
+                c.fillStyle = darker;
+                c.fillRect(x - w * 0.45, y - h, w * 0.9, h * 0.4);
+                c.fillStyle = '#1a1a2e';
+                c.fillRect(x - w * 0.35, y - h * 0.95, w * 0.7, h * 0.3);
+                c.fillStyle = 'rgba(100,180,255,0.15)';
+                c.fillRect(x - w * 0.33, y - h * 0.93, w * 0.66, h * 0.26);
+                c.fillStyle = '#e04040';
+                var tlw = w * 0.12, tlh = h * 0.1;
+                c.fillRect(x - w * 0.45, y - h * 0.55, tlw, tlh);
+                c.fillRect(x + w * 0.45 - tlw, y - h * 0.55, tlw, tlh);
+                c.fillStyle = '#e8e830';
+                c.fillRect(x - w * 0.45, y - h * 0.43, tlw * 0.6, tlh * 0.6);
+                c.fillRect(x + w * 0.45 - tlw * 0.6, y - h * 0.43, tlw * 0.6, tlh * 0.6);
+                c.fillStyle = '#222';
+                c.fillRect(x - w * 0.52, y - h * 0.2, w * 0.18, h * 0.25);
+                c.fillRect(x + w * 0.34, y - h * 0.2, w * 0.18, h * 0.25);
+                c.fillStyle = '#111';
+                c.fillRect(x - w * 0.5, y - h * 0.15, w * 0.14, h * 0.18);
+                c.fillRect(x + w * 0.36, y - h * 0.15, w * 0.14, h * 0.18);
+                c.fillStyle = darker;
+                c.fillRect(x - w * 0.35, y - h * 0.08, w * 0.7, h * 0.08);
+                if (isPlayer) {
+                    c.fillStyle = lighter;
+                    c.fillRect(x - w * 0.15, y - h * 0.55, w * 0.3, h * 0.05);
+                }
+            }
+
+            function shadeColor(col, amt) {
+                var num = parseInt(col.replace('#', ''), 16);
+                var r = Math.min(255, Math.max(0, (num >> 16) + amt));
+                var g = Math.min(255, Math.max(0, ((num >> 8) & 0x00FF) + amt));
+                var b = Math.min(255, Math.max(0, (num & 0x0000FF) + amt));
+                return '#' + (0x1000000 + r * 0x10000 + g * 0x100 + b).toString(16).slice(1);
+            }
+
+            function drawPixelTree(c, x, y, s) {
+                var tw = Math.max(4, 20 * s);
+                var th = Math.max(8, 50 * s);
+                c.fillStyle = '#4a3228';
+                c.fillRect(x - tw * 0.1, y - th * 0.4, tw * 0.2, th * 0.4);
+                c.fillStyle = '#1a6b1a';
+                c.fillRect(x - tw * 0.4, y - th, tw * 0.8, th * 0.35);
+                c.fillStyle = '#23832a';
+                c.fillRect(x - tw * 0.3, y - th * 0.85, tw * 0.6, th * 0.3);
+                c.fillStyle = '#2b9932';
+                c.fillRect(x - tw * 0.2, y - th * 0.7, tw * 0.4, th * 0.2);
+            }
+
+            function drawPixelRock(c, x, y, s) {
+                var rw = Math.max(4, 16 * s);
+                var rh = Math.max(3, 10 * s);
+                c.fillStyle = '#555';
+                c.fillRect(x - rw / 2, y - rh, rw, rh);
+                c.fillStyle = '#666';
+                c.fillRect(x - rw * 0.35, y - rh * 0.8, rw * 0.7, rh * 0.5);
+            }
+
+            function drawPixelCactus(c, x, y, s) {
+                var cw = Math.max(3, 8 * s);
+                var ch = Math.max(6, 30 * s);
+                c.fillStyle = '#2a8a20';
+                c.fillRect(x - cw / 2, y - ch, cw, ch);
+                c.fillRect(x - cw * 1.5, y - ch * 0.7, cw, ch * 0.3);
+                c.fillRect(x + cw * 0.5, y - ch * 0.5, cw, ch * 0.25);
+            }
+
+            var SPRITE_TYPES = { TREE: 0, ROCK: 1, CACTUS: 2 };
+            var SPRITE_DRAW = [drawPixelTree, drawPixelRock, drawPixelCactus];
+            var SPRITE_W = [0.6, 0.3, 0.3];
+
+            var CAR_COLORS = ['#e04040', '#4080e0', '#e0a020', '#40c060', '#d050d0', '#e07030'];
+
+            function renderSprite(c, w, h, sprType, scale, dx, dy, clipY) {
+                if (scale <= 0.005) return;
+                var sw = 40 * scale * w / 2;
+                var sh = 80 * scale * w / 2;
+                if (clipY && dy + 2 > clipY) return;
+                c.save();
+                if (clipY && dy + sh > clipY) {
+                    c.beginPath();
+                    c.rect(0, 0, w, clipY);
+                    c.clip();
+                }
+                SPRITE_DRAW[sprType](c, dx, dy, scale * w / 60);
+                c.restore();
+            }
+
+            function renderCar(c, w, h, car, scale, dx, dy, clipY) {
+                var cw = 350 * scale * w / 2;
+                var ch = 500 * scale * w / 2;
+                if (cw < 4 || ch < 4) return;
+                drawPixelCar(c, dx, dy, cw, ch, car.color, false);
+            }
+
+            function renderPlayer(c, w, h, speedPct, scale, dx, dy, steer, updown) {
+                var bounce = (1.5 * Math.random() * speedPct * resolution) * randomChoice([-1, 1]);
+                var pw = w / 5;
+                var ph = w / 3.5;
+                var px = dx;
+                var py = h - 4 + bounce;
+                drawPixelCar(c, px, py, pw, ph, '#84D99A', true);
+            }
+
+            function lastY() { return segments.length === 0 ? 0 : segments[segments.length - 1].p2.world.y; }
+
+            function addSegment(curve, y) {
+                var n = segments.length;
+                segments.push({
+                    index: n,
+                    p1: { world: { y: lastY(), z: n * segmentLength }, camera: {}, screen: {} },
+                    p2: { world: { y: y, z: (n + 1) * segmentLength }, camera: {}, screen: {} },
+                    curve: curve, sprites: [], cars: [],
+                    color: Math.floor(n / rumbleLength) % 2 ? COLORS.DARK : COLORS.LIGHT
+                });
+            }
+
+            function addSpriteToSeg(n, type, offset) {
+                segments[n].sprites.push({ type: type, offset: offset });
+            }
+
+            function addRoad(enter, hold, leave, curve, y) {
+                var sY = lastY(), eY = sY + (toInt(y, 0) * segmentLength), total = enter + hold + leave;
+                for (var n = 0; n < enter; n++) addSegment(easeIn(0, curve, n / enter), easeInOut(sY, eY, n / total));
+                for (var n = 0; n < hold; n++)  addSegment(curve, easeInOut(sY, eY, (enter + n) / total));
+                for (var n = 0; n < leave; n++) addSegment(easeInOut(curve, 0, n / leave), easeInOut(sY, eY, (enter + hold + n) / total));
+            }
+
+            var ROAD = {
+                LENGTH: { NONE: 0, SHORT: 25, MEDIUM: 50, LONG: 100 },
+                HILL: { NONE: 0, LOW: 20, MEDIUM: 40, HIGH: 60 },
+                CURVE: { NONE: 0, EASY: 2, MEDIUM: 4, HARD: 6 }
+            };
+
+            function addStraight(n) { n = n || ROAD.LENGTH.MEDIUM; addRoad(n, n, n, 0, 0); }
+            function addHill(n, h) { n = n || ROAD.LENGTH.MEDIUM; h = h || ROAD.HILL.MEDIUM; addRoad(n, n, n, 0, h); }
+            function addCurve(n, c, h) { n = n || ROAD.LENGTH.MEDIUM; c = c || ROAD.CURVE.MEDIUM; h = h || ROAD.HILL.NONE; addRoad(n, n, n, c, h); }
+            function addLowRollingHills(n, h) {
+                n = n || ROAD.LENGTH.SHORT; h = h || ROAD.HILL.LOW;
+                addRoad(n, n, n, 0, h / 2); addRoad(n, n, n, 0, -h);
+                addRoad(n, n, n, ROAD.CURVE.EASY, h); addRoad(n, n, n, 0, 0);
+                addRoad(n, n, n, -ROAD.CURVE.EASY, h / 2); addRoad(n, n, n, 0, 0);
+            }
+            function addSCurves() {
+                addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.EASY, ROAD.HILL.NONE);
+                addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+                addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.CURVE.EASY, -ROAD.HILL.LOW);
+                addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.EASY, ROAD.HILL.MEDIUM);
+                addRoad(ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, ROAD.LENGTH.MEDIUM, -ROAD.CURVE.MEDIUM, -ROAD.HILL.MEDIUM);
+            }
+            function addBumps() {
+                addRoad(10, 10, 10, 0, 5); addRoad(10, 10, 10, 0, -2);
+                addRoad(10, 10, 10, 0, -5); addRoad(10, 10, 10, 0, 8);
+                addRoad(10, 10, 10, 0, 5); addRoad(10, 10, 10, 0, -7);
+                addRoad(10, 10, 10, 0, 5); addRoad(10, 10, 10, 0, -2);
+            }
+            function addDownhillToEnd(n) {
+                n = n || 200;
+                addRoad(n, n, n, -ROAD.CURVE.EASY, -lastY() / segmentLength);
+            }
+
+            function resetRoad() {
+                segments = [];
+                addStraight(ROAD.LENGTH.SHORT);
+                addLowRollingHills();
+                addSCurves();
+                addCurve(ROAD.LENGTH.MEDIUM, ROAD.CURVE.MEDIUM, ROAD.HILL.LOW);
+                addBumps();
+                addLowRollingHills();
+                addCurve(ROAD.LENGTH.LONG * 2, ROAD.CURVE.MEDIUM, ROAD.HILL.MEDIUM);
+                addStraight();
+                addHill(ROAD.LENGTH.MEDIUM, ROAD.HILL.HIGH);
+                addSCurves();
+                addCurve(ROAD.LENGTH.LONG, -ROAD.CURVE.MEDIUM, ROAD.HILL.NONE);
+                addHill(ROAD.LENGTH.LONG, ROAD.HILL.HIGH);
+                addCurve(ROAD.LENGTH.LONG, ROAD.CURVE.MEDIUM, -ROAD.HILL.LOW);
+                addBumps();
+                addHill(ROAD.LENGTH.LONG, -ROAD.HILL.MEDIUM);
+                addStraight();
+                addSCurves();
+                addDownhillToEnd();
+
+                for (var n = 10; n < 200; n += 4 + Math.floor(n / 100)) {
+                    addSpriteToSeg(n, SPRITE_TYPES.TREE, 0.6 + Math.random() * 0.5);
+                    addSpriteToSeg(n, SPRITE_TYPES.TREE, 1 + Math.random() * 2);
+                }
+                for (var n = 250; n < 1000; n += 5) {
+                    addSpriteToSeg(n, SPRITE_TYPES.CACTUS, 1.1);
+                    addSpriteToSeg(n + randomInt(0, 5), SPRITE_TYPES.TREE, -1 - Math.random() * 2);
+                }
+                for (var n = 200; n < segments.length; n += 3) {
+                    addSpriteToSeg(n, randomChoice([SPRITE_TYPES.TREE, SPRITE_TYPES.ROCK, SPRITE_TYPES.CACTUS]),
+                        randomChoice([1, -1]) * (2 + Math.random() * 5));
+                }
+
+                cars = [];
+                for (var n = 0; n < totalCars; n++) {
+                    var offset = Math.random() * randomChoice([-0.8, 0.8]);
+                    var z = Math.floor(Math.random() * segments.length) * segmentLength;
+                    var spd = maxSpeed / 4 + Math.random() * maxSpeed / 2;
+                    var car = { offset: offset, z: z, speed: spd, color: randomChoice(CAR_COLORS), percent: 0 };
+                    var seg = findSegment(car.z);
+                    seg.cars.push(car);
+                    cars.push(car);
+                }
+
+                segments[findSegment(playerZ).index + 2].color = COLORS.START;
+                segments[findSegment(playerZ).index + 3].color = COLORS.START;
+                for (var n = 0; n < rumbleLength; n++)
+                    segments[segments.length - 1 - n].color = COLORS.FINISH;
+                trackLength = segments.length * segmentLength;
+            }
+
+            function findSegment(z) { return segments[Math.floor(z / segmentLength) % segments.length]; }
+
+            function update(dt) {
+                var playerSegment = findSegment(position + playerZ);
+                var playerW = 0.3;
+                var speedPercent = speed / maxSpeed;
+                var dx = dt * 2 * speedPercent;
+                var startPosition = position;
+
+                for (var n = 0; n < cars.length; n++) {
+                    var car = cars[n];
+                    var oldSeg = findSegment(car.z);
+                    car.offset = car.offset + updateCarOffset(car, oldSeg, playerSegment, playerW);
+                    car.z = increase(car.z, dt * car.speed, trackLength);
+                    car.percent = percentRemaining(car.z, segmentLength);
+                    var newSeg = findSegment(car.z);
+                    if (oldSeg !== newSeg) {
+                        var idx = oldSeg.cars.indexOf(car);
+                        if (idx >= 0) oldSeg.cars.splice(idx, 1);
+                        newSeg.cars.push(car);
+                    }
+                }
+
+                position = increase(position, dt * speed, trackLength);
+
+                if (keyLeft) playerX -= dx;
+                else if (keyRight) playerX += dx;
+                playerX -= (dx * speedPercent * playerSegment.curve * centrifugal);
+
+                if (keyFaster) speed = accelerate(speed, accel, dt);
+                else if (keySlower) speed = accelerate(speed, breaking, dt);
+                else speed = accelerate(speed, decel, dt);
+
+                if ((playerX < -1) || (playerX > 1)) {
+                    if (speed > offRoadLimit) speed = accelerate(speed, offRoadDecel, dt);
+                    for (var n = 0; n < playerSegment.sprites.length; n++) {
+                        var spr = playerSegment.sprites[n];
+                        var sw = SPRITE_W[spr.type] * 0.3;
+                        if (overlap(playerX, playerW, spr.offset + sw / 2 * (spr.offset > 0 ? 1 : -1), sw)) {
+                            speed = maxSpeed / 5;
+                            position = increase(playerSegment.p1.world.z, -playerZ, trackLength);
+                            break;
+                        }
+                    }
+                }
+
+                for (var n = 0; n < playerSegment.cars.length; n++) {
+                    var car = playerSegment.cars[n];
+                    var carW = 0.15;
+                    if (speed > car.speed) {
+                        if (overlap(playerX, playerW, car.offset, carW, 0.8)) {
+                            speed = car.speed * 0.8 + speed * 0.2;
+                            position = increase(car.z, -playerZ, trackLength);
+                            break;
+                        }
+                    }
+                }
+
+                playerX = limit(playerX, -3, 3);
+                speed = limit(speed, 0, maxSpeed);
+
+                skyOffset = increase(skyOffset, skySpeed * playerSegment.curve * (position - startPosition) / segmentLength, 1);
+                hillOffset = increase(hillOffset, hillSpeed * playerSegment.curve * (position - startPosition) / segmentLength, 1);
+                treeOffset = increase(treeOffset, treeSpeed * playerSegment.curve * (position - startPosition) / segmentLength, 1);
+
+                if (position > playerZ) {
+                    if (currentLapTime && (startPosition < playerZ)) {
+                        lastLapTime = currentLapTime;
+                        currentLapTime = 0;
+                        if (!bestLapTime || lastLapTime < bestLapTime) bestLapTime = lastLapTime;
+                        document.getElementById('hudLast').textContent = formatTime(lastLapTime);
+                        document.getElementById('hudBest').textContent = formatTime(bestLapTime);
+                    } else {
+                        currentLapTime += dt;
+                    }
+                }
+
+                document.getElementById('hudSpeed').textContent = Math.round(speed / maxSpeed * 280);
+                document.getElementById('hudLap').textContent = formatTime(currentLapTime);
+            }
+
+            function updateCarOffset(car, carSeg, pSeg, pW) {
+                var carW = 0.15;
+                if ((carSeg.index - pSeg.index) > drawDistance) return 0;
+                for (var i = 1; i < 20; i++) {
+                    var seg = segments[(carSeg.index + i) % segments.length];
+                    if ((seg === pSeg) && (car.speed > speed) && overlap(playerX, pW, car.offset, carW, 1.2)) {
+                        var dir;
+                        if (playerX > 0.5) dir = -1; else if (playerX < -0.5) dir = 1;
+                        else dir = (car.offset > playerX) ? 1 : -1;
+                        return dir * 1 / i * (car.speed - speed) / maxSpeed;
+                    }
+                    for (var j = 0; j < seg.cars.length; j++) {
+                        var oc = seg.cars[j];
+                        if ((car.speed > oc.speed) && overlap(car.offset, carW, oc.offset, 0.25, 1.2)) {
+                            var dir;
+                            if (oc.offset > 0.5) dir = -1; else if (oc.offset < -0.5) dir = 1;
+                            else dir = (car.offset > oc.offset) ? 1 : -1;
+                            return dir * 1 / i * (car.speed - oc.speed) / maxSpeed;
+                        }
+                    }
+                }
+                if (car.offset < -0.9) return 0.1;
+                if (car.offset > 0.9) return -0.1;
+                return 0;
+            }
+
+            function render() {
+                var baseSeg = findSegment(position);
+                var basePct = percentRemaining(position, segmentLength);
+                var pSeg = findSegment(position + playerZ);
+                var pPct = percentRemaining(position + playerZ, segmentLength);
+                var pY = interpolate(pSeg.p1.world.y, pSeg.p2.world.y, pPct);
+                var maxy = height;
+                var x = 0, dx = -(baseSeg.curve * basePct);
+
+                ctx.clearRect(0, 0, width, height);
+                renderBackground(ctx, width, height);
+
+                var n, i, seg, car;
+                for (n = 0; n < drawDistance; n++) {
+                    seg = segments[(baseSeg.index + n) % segments.length];
+                    seg.looped = seg.index < baseSeg.index;
+                    seg.fog = expFog(n / drawDistance, fogDensity);
+                    seg.clip = maxy;
+                    project(seg.p1, (playerX * roadWidth) - x, pY + cameraHeight, position - (seg.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+                    project(seg.p2, (playerX * roadWidth) - x - dx, pY + cameraHeight, position - (seg.looped ? trackLength : 0), cameraDepth, width, height, roadWidth);
+                    x = x + dx; dx = dx + seg.curve;
+                    if ((seg.p1.camera.z <= cameraDepth) || (seg.p2.screen.y >= seg.p1.screen.y) || (seg.p2.screen.y >= maxy)) continue;
+                    renderSegment(ctx, width, lanes, seg.p1.screen.x, seg.p1.screen.y, seg.p1.screen.w, seg.p2.screen.x, seg.p2.screen.y, seg.p2.screen.w, seg.fog, seg.color);
+                    maxy = seg.p1.screen.y;
+                }
+
+                for (n = drawDistance - 1; n > 0; n--) {
+                    seg = segments[(baseSeg.index + n) % segments.length];
+                    for (i = 0; i < seg.cars.length; i++) {
+                        car = seg.cars[i];
+                        var cScale = interpolate(seg.p1.screen.scale, seg.p2.screen.scale, car.percent);
+                        var cX = interpolate(seg.p1.screen.x, seg.p2.screen.x, car.percent) + (cScale * car.offset * roadWidth * width / 2);
+                        var cY = interpolate(seg.p1.screen.y, seg.p2.screen.y, car.percent);
+                        renderCar(ctx, width, height, car, cScale, cX, cY, seg.clip);
+                    }
+                    for (i = 0; i < seg.sprites.length; i++) {
+                        var spr = seg.sprites[i];
+                        var sScale = seg.p1.screen.scale;
+                        var sX = seg.p1.screen.x + (sScale * spr.offset * roadWidth * width / 2);
+                        var sY = seg.p1.screen.y;
+                        renderSprite(ctx, width, height, spr.type, sScale, sX, sY, seg.clip);
+                    }
+                    if (seg === pSeg) {
+                        renderPlayer(ctx, width, height, speed / maxSpeed, cameraDepth / playerZ, width / 2,
+                            (height / 2) - (cameraDepth / playerZ * interpolate(pSeg.p1.camera.y, pSeg.p2.camera.y, pPct) * height / 2),
+                            speed * (keyLeft ? -1 : keyRight ? 1 : 0),
+                            pSeg.p2.world.y - pSeg.p1.world.y);
+                    }
+                }
+            }
+
+            function formatTime(dt) {
+                if (!dt && dt !== 0) return '--';
+                var m = Math.floor(dt / 60), s = Math.floor(dt - (m * 60)), t = Math.floor(10 * (dt - Math.floor(dt)));
+                if (m > 0) return m + '.' + (s < 10 ? '0' : '') + s + '.' + t;
+                return s + '.' + t;
+            }
+
+            function resize() {
+                var wrap = document.getElementById('gameWrap');
+                var ww = wrap.clientWidth, wh = wrap.clientHeight;
+                var scale = Math.min(ww / width, wh / height);
+                canvas.style.width = Math.floor(width * scale) + 'px';
+                canvas.style.height = Math.floor(height * scale) + 'px';
+            }
+
+            function initGame() {
+                canvas.width = width;
+                canvas.height = height;
+                cameraDepth = 1 / Math.tan((fieldOfView / 2) * Math.PI / 180);
+                playerZ = cameraHeight * cameraDepth;
+                resolution = height / 480;
+                resetRoad();
+                resize();
+            }
+
+            function startGame() {
+                if (gameStarted) return;
+                gameStarted = true;
+                document.getElementById('startScreen').style.display = 'none';
+                document.getElementById('hud').style.display = 'block';
+                if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                    document.getElementById('touchControls').style.display = 'block';
+                }
+                initGame();
+                var last = timestamp(), dt = 0, gdt = 0;
+                function frame() {
+                    var now = timestamp();
+                    dt = Math.min(1, (now - last) / 1000);
+                    gdt += dt;
+                    while (gdt > step) { gdt -= step; update(step); }
+                    render();
+                    last = now;
+                    requestAnimationFrame(frame);
+                }
+                frame();
+            }
+
+            document.addEventListener('keydown', function (e) {
+                if (e.keyCode === KEY.LEFT || e.keyCode === KEY.A) keyLeft = true;
+                if (e.keyCode === KEY.RIGHT || e.keyCode === KEY.D) keyRight = true;
+                if (e.keyCode === KEY.UP || e.keyCode === KEY.W) { keyFaster = true; e.preventDefault(); }
+                if (e.keyCode === KEY.DOWN || e.keyCode === KEY.S) { keySlower = true; e.preventDefault(); }
+            });
+            document.addEventListener('keyup', function (e) {
+                if (e.keyCode === KEY.LEFT || e.keyCode === KEY.A) keyLeft = false;
+                if (e.keyCode === KEY.RIGHT || e.keyCode === KEY.D) keyRight = false;
+                if (e.keyCode === KEY.UP || e.keyCode === KEY.W) keyFaster = false;
+                if (e.keyCode === KEY.DOWN || e.keyCode === KEY.S) keySlower = false;
+            });
+
+            function touchBind(id, setKey) {
+                var el = document.getElementById(id);
+                function on(e) { e.preventDefault(); setKey(true); el.classList.add('active'); }
+                function off(e) { setKey(false); el.classList.remove('active'); }
+                el.addEventListener('touchstart', on, { passive: false });
+                el.addEventListener('touchend', off);
+                el.addEventListener('touchcancel', off);
+                el.addEventListener('mousedown', on);
+                el.addEventListener('mouseup', off);
+                el.addEventListener('mouseleave', off);
+            }
+            touchBind('tLeft', function (v) { keyLeft = v; });
+            touchBind('tRight', function (v) { keyRight = v; });
+            touchBind('tGas', function (v) { keyFaster = v; });
+            touchBind('tBrake', function (v) { keySlower = v; });
+
+            document.getElementById('btnStart').addEventListener('click', startGame);
+            document.addEventListener('keydown', function (e) {
+                if (!gameStarted && (e.keyCode === KEY.UP || e.keyCode === KEY.W || e.keyCode === 13 || e.keyCode === 32)) {
+                    startGame();
+                }
+            });
+            window.addEventListener('resize', resize);
+
+        })();
+    </script>
+</body>
+
+</html>
